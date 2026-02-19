@@ -392,7 +392,7 @@ async function startCreation() {
     setProgress(Math.round(i/PLAYLISTS.length*90),`Creando ${i+1} de ${PLAYLISTS.length}...`);
     log(`Invocando "${pl.name}"...`,'info');
     try {
-      const created = await api(`https://api.spotify.com/v1/users/${me.id}/playlists`,'POST',
+      const created = await api(`https://api.spotify.com/v1/me/playlists`,'POST',
         {name:pl.name, description:pl.desc, public:false});
       let uris = [];
       for (const q of pl.searches) {
