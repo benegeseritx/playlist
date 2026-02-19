@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Grimorio de Playlists</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Mono:wght@300;400&display=swap');
+
+  :root {
+    --bg: #0c0b10;
+    --surface: #13111a;
+    --surface2: #1c1825;
+    --border: #2a2440;
+    --accent: #b07fff;
+    --accent2: #ff6b9d;
+    --spotify: #1DB954;
+    --text: #e8e0f0;
+    --muted: #7a6e8a;
+    --warn: #ffb347;
+    --error: #ff4466;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    padding: 0;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(176,127,255,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 100%, rgba(255,107,157,0.05) 0%, transparent 50%);
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 56px 24px 100px;
+  }
+
+  header { text-align: center; margin-bottom: 52px; }
+  .sigil {
+    font-size: 3rem; display: block; margin-bottom: 16px;
+    filter: drop-shadow(0 0 24px rgba(176,127,255,0.5));
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(176,127,255,0.4)); }
+    50% { filter: drop-shadow(0 0 36px rgba(176,127,255,0.7)); }
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.6rem, 7vw, 4.2rem);
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  .subtitle {
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 14px;
+    margin: 32px 0;
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s, opacity 0.3s;
+  }
+  .step.active { border-color: rgba(176,127,255,0.5); }
+  .step.done { border-color: rgba(29,185,84,0.4); opacity: 0.65; pointer-events: none; }
+  .step.locked { opacity: 0.35; pointer-events: none; }
+
+  .step-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem; color: var(--accent);
+    line-height: 1; width: 32px; flex-shrink: 0;
+  }
+  .step-title { font-size: 1.25rem; font-weight: 600; }
+
+  .step-desc {
+    font-style: italic; color: var(--muted);
+    font-size: 0.95rem; line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .instr {
+    background: var(--surface2);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.76rem;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+  .instr ol { padding-left: 16px; }
+  .instr li { margin-bottom: 4px; }
+  .instr a { color: var(--accent); text-decoration: none; }
+  .instr a:hover { text-decoration: underline; }
+  .instr strong { color: var(--text); font-weight: 400; }
+  .instr .tag {
+    background: rgba(176,127,255,0.15);
+    color: var(--accent);
+    padding: 1px 6px; border-radius: 4px;
+    font-size: 0.72rem;
+  }
+
+  .url-box {
+    display: flex; align-items: center; gap: 10px;
+    background: #0f0d17;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+  }
+  .url-box span { flex: 1; color: var(--accent2); word-break: break-all; }
+  .copy-btn {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); border-radius: 5px;
+    padding: 4px 10px; cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; transition: all 0.2s; flex-shrink: 0;
+  }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.15em;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 18px;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: #3a3452; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 26px; border: none; border-radius: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.05rem; letter-spacing: 0.1em;
+    cursor: pointer; transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(176,127,255,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(176,127,255,0.4); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .btn-spotify {
+    background: var(--spotify); color: #000;
+    box-shadow: 0 4px 20px rgba(29,185,84,0.25);
+  }
+  .btn-spotify:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(29,185,84,0.4); }
+
+  .alert {
+    display: none;
+    border-radius: 8px; padding: 12px 16px;
+    font-family: 'DM Mono', monospace; font-size: 0.76rem;
+    margin-bottom: 16px;
+  }
+  .alert-ok { background: rgba(29,185,84,0.1); border: 1px solid rgba(29,185,84,0.3); color: var(--spotify); }
+  .alert-err { background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.3); color: var(--error); }
+
+  #section-progress { display: none; }
+  .prog-wrap { background: var(--surface2); border-radius: 4px; height: 5px; margin: 14px 0; overflow: hidden; }
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px; width: 0%;
+    transition: width 0.5s ease;
+  }
+  .prog-label { font-family: 'DM Mono', monospace; font-size: 0.73rem; color: var(--muted); }
+
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 16px 0; }
+  .chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 8px 12px;
+    font-size: 0.75rem; display: flex; align-items: center; gap: 8px;
+    transition: border-color 0.3s;
+  }
+  .chip .chip-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chip .chip-st { font-size: 0.65rem; flex-shrink: 0; }
+  .chip.pending .chip-st { color: var(--muted); }
+  .chip.running { border-color: var(--warn); }
+  .chip.running .chip-st { color: var(--warn); }
+  .chip.ok { border-color: rgba(29,185,84,0.4); }
+  .chip.ok .chip-st { color: var(--spotify); }
+  .chip.fail { border-color: rgba(255,68,102,0.4); }
+  .chip.fail .chip-st { color: var(--error); }
+
+  #log {
+    margin-top: 14px; max-height: 200px;
+    overflow-y: auto; font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; line-height: 1.9;
+  }
+  .ll { padding: 1px 0; }
+  .ll-ok { color: var(--spotify); }
+  .ll-info { color: var(--muted); }
+  .ll-warn { color: var(--warn); }
+  .ll-err { color: var(--error); }
+
+  #section-done {
+    display: none; text-align: center;
+    background: var(--surface); border: 1px solid rgba(29,185,84,0.3);
+    border-radius: 14px; padding: 40px 30px; margin-top: 20px;
+  }
+  #section-done .big { font-size: 3rem; display: block; margin-bottom: 14px; }
+  #section-done h2 { font-size: 2rem; font-weight: 600; margin-bottom: 8px; }
+  #section-done p { color: var(--muted); font-style: italic; margin-bottom: 24px; line-height: 1.6; }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <span class="sigil">🜏</span>
+    <h1>El Grimorio de Playlists</h1>
+    <p class="subtitle">Un ritual para invocar tus 12 playlists directamente en Spotify</p>
+  </header>
+
+  <div class="step active" id="step1">
+    <div class="step-header">
+      <span class="step-num">I</span>
+      <span class="step-title">La URL de este Grimorio</span>
+    </div>
+    <p class="step-desc">Copiá la URL de esta página en CodePen (la barra de arriba del navegador) y pegala acá abajo.</p>
+    <div class="instr">
+      <ol>
+        <li>Mirá la barra de direcciones de tu navegador ahora mismo</li>
+        <li>Copiá esa URL completa (ej: <span class="tag">https://codepen.io/tu-user/pen/AbCdEf</span>)</li>
+        <li>Pegala en el campo de abajo</li>
+      </ol>
+    </div>
+    <label for="input-codepen-url">URL de esta página (CodePen)</label>
+    <input type="text" id="input-codepen-url" placeholder="https://codepen.io/tu-usuario/pen/AbCdEf" />
+    <button class="btn btn-primary" onclick="goStep2()">Siguiente →</button>
+  </div>
+
+  <div class="step locked" id="step2">
+    <div class="step-header">
+      <span class="step-num">II</span>
+      <span class="step-title">Creá tu app en Spotify (2 min)</span>
+    </div>
+    <p class="step-desc">Spotify requiere una app registrada para autorizar el acceso. Es gratis y solo se hace una vez.</p>
+    <div class="instr">
+      <ol>
+        <li>Entrá a <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a></li>
+        <li>Hacé clic en <strong>"Create app"</strong></li>
+        <li>Nombre: cualquiera (ej: <strong>Grimorio</strong>). Descripción: opcional.</li>
+        <li>En <strong>"Redirect URIs"</strong> pegá exactamente esta URL:
+          <div class="url-box">
+            <span id="display-redirect">— completá el paso I primero —</span>
+            <button class="copy-btn" onclick="copyRedirect()">Copiar</button>
+          </div>
+        </li>
+        <li>Tildá <strong>"Web API"</strong> y aceptá los términos</li>
+        <li>Guardá y copiá el <strong>Client ID</strong> que aparece</li>
+      </ol>
+    </div>
+    <label for="input-client-id">Client ID de Spotify</label>
+    <input type="text" id="input-client-id" placeholder="Ej: 4a8f3b2c1d0e9f7a6b5c4d3e2f1a0b9c" />
+    <button class="btn btn-primary" onclick="goStep3()">Conectar con Spotify →</button>
+  </div>
+
+  <div class="step locked" id="step3">
+    <div class="step-header">
+      <span class="step-num">III</span>
+      <span class="step-title">Autorizá y creá las playlists</span>
+    </div>
+    <p class="step-desc">Spotify te va a pedir que confirmes el acceso. Después volvés acá automáticamente y creás todo con un clic.</p>
+    <div id="alert-token-ok" class="alert alert-ok">✓ ¡Conectado! Tu cuenta está lista para el ritual.</div>
+    <div id="alert-token-err" class="alert alert-err">✗ No se pudo obtener el token. Verificá que la Redirect URI en Spotify coincida exactamente con la URL de esta página.</div>
+    <button class="btn btn-primary" id="btn-auth" onclick="doAuth()">🔮 Autorizar con Spotify</button>
+    <button class="btn btn-primary" id="btn-create" onclick="startCreation()" style="display:none;background:linear-gradient(135deg,#1DB954,#17a344);color:#000;">
+      📜 Crear las 12 playlists
+    </button>
+  </div>
+
+  <div id="section-progress">
+    <div class="divider">invocando el grimorio</div>
+    <div class="step active" style="margin-bottom:0">
+      <div class="prog-wrap"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-label" id="prog-label">Preparando...</div>
+      <div class="chips" id="chips"></div>
+      <div id="log"></div>
+    </div>
+  </div>
+
+  <div id="section-done">
+    <span class="big">🌙</span>
+    <h2>El grimorio está completo</h2>
+    <p>Las 12 playlists fueron invocadas en tu Spotify.<br>Abrí la app y encontralas en tu biblioteca.</p>
+    <a href="https://open.spotify.com" target="_blank" class="btn btn-spotify">Abrir Spotify ↗</a>
+  </div>
+
+</div>
+<script>
+const PLAYLISTS = [
+  { name:'🗺️ Cenizas del Sur',                     desc:'Rock Argentino · Indie Latino · Folklore — Lo que queda cuando el viento se lleva todo.',         searches:['rock argentino','charly garcia','soda stereo','mon laferte','bizarrap','manu chao'] },
+  { name:'🌸 Hechizos del Este',                    desc:'K-Pop · K-Indie · K-R&B — Canciones que llegan desde el otro lado del mundo.',                    searches:['blackpink','bts k-pop','newjeans kpop','le sserafim','aespa kpop','rosé kpop'] },
+  { name:'🜄 El Gabinete de las Cosas sin Nombre',  desc:'Pop Internacional · Alternativo — El cuarto secreto de la biblioteca.',                           searches:['taylor swift','billie eilish','djo end of beginning','olivia rodrigo','sabrina carpenter'] },
+  { name:'🕯️ Arquitectura del Desvelo',            desc:'Indie · Art Pop · Bedroom Pop — Canciones construidas en la madrugada.',                          searches:['arctic monkeys','the killers','fleetwood mac','the marias','pinkpantheress indie'] },
+  { name:'🪞 Espejos que Mienten Bonito',           desc:'Pop — Brilla con demasiada honestidad.',                                                          searches:['ed sheeran shape of you','cigarettes after sex','sabrina carpenter','mazzy star'] },
+  { name:'⚗️ Rituales Eléctricos',                 desc:'EDM · House · Techno · Boiler Room — La danza como invocación.',                                  searches:['calvin harris','disclosure latch','fred again','daft punk','melodic techno'] },
+  { name:'🌒 El Aquelarre del Boliche',             desc:'Reggaeton · Trap Latino · Urbano — Cuando la noche se convierte en otro mundo.',                  searches:['bad bunny 2024','reggaeton hits','trap latino 2024','urbano latino'] },
+  { name:'💀 Lo que Sobrevive al Fuego',            desc:'Metal · Rock · Punk · Emo · Grunge — Las canciones que encontraste cuando todo ardía.',           searches:['evanescence','blink-182','my chemical romance','nirvana grunge','paramore'] },
+  { name:'🍂 Mapas de Lugares que Ya No Existen',   desc:'Folk · Country · Indie Folk — El peso dulce de lo que se perdió.',                                searches:['vance joy riptide','the lumineers','tracy chapman','folk indie','country hits'] },
+  { name:'🖤 Terciopelo y Herida',                  desc:'R&B · Soul · Neo Soul — Suaves como el daño que hacen.',                                          searches:['olivia dean','the weeknd blinding lights','r&b soul 2024','neo soul'] },
+  { name:'🔮 Profecías en Loop',                    desc:'Hip Hop · Rap · Trap — Versos que suenan a advertencia.',                                         searches:['kendrick lamar','gorillaz feel good inc','linkin park','hip hop 2024'] },
+  { name:'🕸️ Bruja en la Pista',                   desc:'Dance Pop · Electropop — Bailar también es un acto de poder.',                                    searches:['lady gaga bad romance','dance pop hits','electropop','lady gaga poker face'] },
+];
+
+let codepenUrl = '', clientId = '', accessToken = '';
+
+function goStep2() {
+  const val = document.getElementById('input-codepen-url').value.trim();
+  if (!val.startsWith('http')) { alert('Por favor ingresá una URL válida.'); return; }
+  codepenUrl = val;
+  localStorage.setItem('sp_redirect', codepenUrl);
+  document.getElementById('display-redirect').textContent = codepenUrl;
+  document.getElementById('step1').classList.replace('active','done');
+  const s2 = document.getElementById('step2');
+  s2.classList.remove('locked'); s2.classList.add('active');
+  s2.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function copyRedirect() {
+  const url = document.getElementById('display-redirect').textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ Copiado'; setTimeout(() => btn.textContent = 'Copiar', 2000);
+  });
+}
+
+function goStep3() {
+  const val = document.getElementById('input-client-id').value.trim();
+  if (!val || val.length < 10) { alert('Por favor ingresá un Client ID válido.'); return; }
+  clientId = val;
+  localStorage.setItem('sp_client_id', clientId);
+  document.getElementById('step2').classList.replace('active','done');
+  const s3 = document.getElementById('step3');
+  s3.classList.remove('locked'); s3.classList.add('active');
+  s3.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function doAuth() {
+  const redirect = codepenUrl || localStorage.getItem('sp_redirect') || '';
+  const cid = clientId || localStorage.getItem('sp_client_id') || '';
+  if (!redirect || !cid) { alert('Completá los pasos anteriores primero.'); return; }
+  const params = new URLSearchParams({
+    client_id: cid,
+    response_type: 'token',
+    redirect_uri: redirect,
+    scope: 'playlist-modify-public playlist-modify-private',
+    show_dialog: 'true'
+  });
+  window.location.href = 'https://accounts.spotify.com/authorize?' + params;
+}
+
+window.addEventListener('load', () => {
+  const savedRedirect = localStorage.getItem('sp_redirect');
+  const savedCid = localStorage.getItem('sp_client_id');
+  if (savedRedirect) {
+    document.getElementById('input-codepen-url').value = savedRedirect;
+    document.getElementById('display-redirect').textContent = savedRedirect;
+    codepenUrl = savedRedirect;
+  }
+  if (savedCid) {
+    document.getElementById('input-client-id').value = savedCid;
+    clientId = savedCid;
+  }
+
+  const hash = new URLSearchParams(window.location.hash.substring(1));
+  const token = hash.get('access_token');
+  if (token) {
+    accessToken = token;
+    localStorage.setItem('sp_token', token);
+    window.history.replaceState({}, '', window.location.pathname + window.location.search);
+    ['step1','step2'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('active','locked');
+      el.classList.add('done');
+    });
+    const s3 = document.getElementById('step3');
+    s3.classList.remove('locked'); s3.classList.add('active');
+    document.getElementById('alert-token-ok').style.display = 'block';
+    document.getElementById('btn-auth').style.display = 'none';
+    document.getElementById('btn-create').style.display = 'inline-flex';
+    s3.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+});
+
+async function api(url, method='GET', body=null) {
+  const token = accessToken || localStorage.getItem('sp_token');
+  const res = await fetch(url, {
+    method,
+    headers: { 'Authorization':'Bearer '+token, 'Content-Type':'application/json' },
+    body: body ? JSON.stringify(body) : null
+  });
+  if (res.status === 204) return {};
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data;
+}
+
+async function searchTracks(query, limit=8) {
+  const data = await api(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=${limit}`);
+  return (data.tracks?.items || []).map(t => t.uri);
+}
+
+async function addTracks(playlistId, uris) {
+  for (let i = 0; i < uris.length; i += 100)
+    await api(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, 'POST', { uris: uris.slice(i, i+100) });
+}
+
+function log(msg, type='info') {
+  const el = document.getElementById('log');
+  const d = document.createElement('div');
+  d.className = 'll ll-'+type;
+  d.textContent = ({ ok:'✓', info:'·', warn:'⚠', err:'✗' }[type]||'·') + ' ' + msg;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+function setProgress(pct, label) {
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-label').textContent = label;
+}
+function setChip(i, status) {
+  const c = document.getElementById('chip-'+i);
+  if (!c) return;
+  c.className = 'chip '+status;
+  c.querySelector('.chip-st').textContent = { pending:'○', running:'◌', ok:'✓', fail:'✗' }[status]||'';
+}
+
+async function startCreation() {
+  document.getElementById('btn-create').disabled = true;
+  document.getElementById('section-progress').style.display = 'block';
+  document.getElementById('section-progress').scrollIntoView({ behavior:'smooth' });
+
+  const chipsEl = document.getElementById('chips');
+  PLAYLISTS.forEach((pl, i) => {
+    const c = document.createElement('div');
+    c.className = 'chip pending'; c.id = 'chip-'+i;
+    c.innerHTML = `<span class="chip-name">${pl.name}</span><span class="chip-st">○</span>`;
+    chipsEl.appendChild(c);
+  });
+
+  log('Conectando con Spotify...', 'info');
+  let me;
+  try { me = await api('https://api.spotify.com/v1/me'); }
+  catch(e) {
+    log('Error: '+e.message, 'err');
+    document.getElementById('alert-token-err').style.display = 'block';
+    return;
+  }
+  log('Conectado como: ' + (me.display_name || me.id), 'ok');
+
+  let done = 0;
+  const total = PLAYLISTS.length;
+
+  for (let i = 0; i < total; i++) {
+    const pl = PLAYLISTS[i];
+    setChip(i, 'running');
+    setProgress(Math.round(i/total*90), `Creando ${i+1} de ${total}: ${pl.name}`);
+    log(`Invocando "${pl.name}"...`, 'info');
+    try {
+      const created = await api(`https://api.spotify.com/v1/users/${me.id}/playlists`, 'POST', {
+        name: pl.name, description: pl.desc, public: false
+      });
+      let uris = [];
+      for (const q of pl.searches) {
+        const found = await searchTracks(q);
+        uris = [...new Set([...uris, ...found])];
+        await new Promise(r => setTimeout(r, 150));
+      }
+      if (uris.length) {
+        await addTracks(created.id, uris.slice(0, 50));
+        log(`"${pl.name}" — ${Math.min(uris.length,50)} canciones ✓`, 'ok');
+      } else {
+        log(`"${pl.name}" — creada sin canciones`, 'warn');
+      }
+      setChip(i, 'ok'); done++;
+    } catch(e) {
+      log(`Error en "${pl.name}": ${e.message}`, 'err');
+      setChip(i, 'fail');
+    }
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  setProgress(100, `¡Ritual completo! ${done}/${total} playlists creadas.`);
+  log(`Grimorio completo: ${done} de ${total} playlists invocadas 🌙`, 'ok');
+  await new Promise(r => setTimeout(r, 600));
+  document.getElementById('section-done').style.display = 'block';
+  document.getElementById('section-done').scrollIntoView({ behavior:'smooth' });
+}
+</script>
+</body>
+</html>
