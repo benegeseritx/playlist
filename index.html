@@ -48,6 +48,7 @@
     padding: 56px 24px 100px;
   }
 
+  /* ── Header ── */
   header { text-align: center; margin-bottom: 52px; }
   .sigil {
     font-size: 3rem; display: block; margin-bottom: 16px;
@@ -75,6 +76,7 @@
     margin-top: 10px;
   }
 
+  /* ── Divider ── */
   .divider {
     display: flex; align-items: center; gap: 14px;
     margin: 32px 0;
@@ -89,6 +91,7 @@
     background: linear-gradient(90deg, transparent, var(--border), transparent);
   }
 
+  /* ── Cards / Steps ── */
   .step {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -115,6 +118,7 @@
     margin-bottom: 20px;
   }
 
+  /* ── Instructions box ── */
   .instr {
     background: var(--surface2);
     border-left: 2px solid var(--accent);
@@ -138,6 +142,7 @@
     font-size: 0.72rem;
   }
 
+  /* ── URL display ── */
   .url-box {
     display: flex; align-items: center; gap: 10px;
     background: #0f0d17;
@@ -158,6 +163,7 @@
   }
   .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* ── Input ── */
   label {
     display: block;
     font-family: 'DM Mono', monospace;
@@ -181,6 +187,7 @@
   input[type="text"]:focus { border-color: var(--accent); }
   input[type="text"]::placeholder { color: #3a3452; }
 
+  /* ── Buttons ── */
   .btn {
     display: inline-flex; align-items: center; gap: 10px;
     padding: 12px 26px; border: none; border-radius: 8px;
@@ -202,6 +209,7 @@
   }
   .btn-spotify:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(29,185,84,0.4); }
 
+  /* ── Token alert ── */
   .alert {
     display: none;
     border-radius: 8px; padding: 12px 16px;
@@ -211,6 +219,7 @@
   .alert-ok { background: rgba(29,185,84,0.1); border: 1px solid rgba(29,185,84,0.3); color: var(--spotify); }
   .alert-err { background: rgba(255,68,102,0.1); border: 1px solid rgba(255,68,102,0.3); color: var(--error); }
 
+  /* ── Progress ── */
   #section-progress { display: none; }
   .prog-wrap { background: var(--surface2); border-radius: 4px; height: 5px; margin: 14px 0; overflow: hidden; }
   .prog-fill {
@@ -221,6 +230,7 @@
   }
   .prog-label { font-family: 'DM Mono', monospace; font-size: 0.73rem; color: var(--muted); }
 
+  /* ── Chips grid ── */
   .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 16px 0; }
   .chip {
     background: var(--surface2); border: 1px solid var(--border);
@@ -238,6 +248,7 @@
   .chip.fail { border-color: rgba(255,68,102,0.4); }
   .chip.fail .chip-st { color: var(--error); }
 
+  /* ── Log ── */
   #log {
     margin-top: 14px; max-height: 200px;
     overflow-y: auto; font-family: 'DM Mono', monospace;
@@ -249,6 +260,7 @@
   .ll-warn { color: var(--warn); }
   .ll-err { color: var(--error); }
 
+  /* ── Summary ── */
   #section-done {
     display: none; text-align: center;
     background: var(--surface); border: 1px solid rgba(29,185,84,0.3);
@@ -271,43 +283,49 @@
     <p class="subtitle">Un ritual para invocar tus 12 playlists directamente en Spotify</p>
   </header>
 
+  <!-- ═══ STEP 1: CodePen ═══ -->
   <div class="step active" id="step1">
     <div class="step-header">
       <span class="step-num">I</span>
-      <span class="step-title">La URL de este Grimorio</span>
+      <span class="step-title">Abrí este código en CodePen</span>
     </div>
-    <p class="step-desc">Copiá la URL de esta página en CodePen (la barra de arriba del navegador) y pegala acá abajo.</p>
+    <p class="step-desc">Para que Spotify acepte la conexión, el archivo necesita estar en una URL pública. CodePen es gratis y no requiere instalación.</p>
     <div class="instr">
       <ol>
-        <li>Mirá la barra de direcciones de tu navegador ahora mismo</li>
-        <li>Copiá esa URL completa (ej: <span class="tag">https://codepen.io/tu-user/pen/AbCdEf</span>)</li>
-        <li>Pegala en el campo de abajo</li>
+        <li>Entrá a <a href="https://codepen.io/pen" target="_blank">codepen.io/pen</a></li>
+        <li>Copiá <strong>todo</strong> el contenido de este archivo HTML</li>
+        <li>Pegalo en el panel <strong>HTML</strong> de CodePen (el de la izquierda)</li>
+        <li>Hacé clic en <strong>Save</strong> — te va a dar una URL pública</li>
+        <li>Copiá esa URL (ej: <span class="tag">https://codepen.io/tu-user/pen/AbCdEf</span>)</li>
       </ol>
     </div>
-    <label for="input-codepen-url">URL de esta página (CodePen)</label>
+    <p style="font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);margin-bottom:12px;">Una vez que tenés tu URL de CodePen, pegala acá:</p>
+    <label for="input-codepen-url">Tu URL de CodePen</label>
     <input type="text" id="input-codepen-url" placeholder="https://codepen.io/tu-usuario/pen/AbCdEf" />
     <button class="btn btn-primary" onclick="goStep2()">Siguiente →</button>
   </div>
 
+  <!-- ═══ STEP 2: Spotify App ═══ -->
   <div class="step locked" id="step2">
     <div class="step-header">
       <span class="step-num">II</span>
       <span class="step-title">Creá tu app en Spotify (2 min)</span>
     </div>
-    <p class="step-desc">Spotify requiere una app registrada para autorizar el acceso. Es gratis y solo se hace una vez.</p>
+    <p class="step-desc">Spotify requiere que registres una app para autorizar el acceso. Es gratis y solo se hace una vez.</p>
     <div class="instr">
       <ol>
         <li>Entrá a <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a></li>
         <li>Hacé clic en <strong>"Create app"</strong></li>
-        <li>Nombre: cualquiera (ej: <strong>Grimorio</strong>). Descripción: opcional.</li>
-        <li>En <strong>"Redirect URIs"</strong> pegá exactamente esta URL:
+        <li>Nombre: cualquiera (ej: <strong>"Grimorio"</strong>). Descripción: opcional.</li>
+        <li>En <strong>"Redirect URIs"</strong> pegá esta URL exacta:<br>
           <div class="url-box">
-            <span id="display-redirect">— completá el paso I primero —</span>
+            <span id="display-redirect">— pegá tu URL de CodePen en el paso anterior —</span>
             <button class="copy-btn" onclick="copyRedirect()">Copiar</button>
           </div>
         </li>
-        <li>Tildá <strong>"Web API"</strong> y aceptá los términos</li>
-        <li>Guardá y copiá el <strong>Client ID</strong> que aparece</li>
+        <li>Tildá <strong>"Web API"</strong> en los checkboxes de abajo</li>
+        <li>Aceptá los términos y hacé clic en <strong>Save</strong></li>
+        <li>En la pantalla de tu app, copiá el <strong>Client ID</strong></li>
       </ol>
     </div>
     <label for="input-client-id">Client ID de Spotify</label>
@@ -315,20 +333,22 @@
     <button class="btn btn-primary" onclick="goStep3()">Conectar con Spotify →</button>
   </div>
 
+  <!-- ═══ STEP 3: Auth ═══ -->
   <div class="step locked" id="step3">
     <div class="step-header">
       <span class="step-num">III</span>
-      <span class="step-title">Autorizá y creá las playlists</span>
+      <span class="step-title">Autorizá el acceso</span>
     </div>
-    <p class="step-desc">Spotify te va a pedir que confirmes el acceso. Después volvés acá automáticamente y creás todo con un clic.</p>
+    <p class="step-desc">Al hacer clic, Spotify te va a pedir que inicies sesión y confirmes el acceso. Después volvés automáticamente acá.</p>
     <div id="alert-token-ok" class="alert alert-ok">✓ ¡Conectado! Tu cuenta está lista para el ritual.</div>
-    <div id="alert-token-err" class="alert alert-err">✗ No se pudo obtener el token. Verificá que la Redirect URI en Spotify coincida exactamente con la URL de esta página.</div>
-    <button class="btn btn-primary" id="btn-auth" onclick="doAuth()">🔮 Autorizar con Spotify</button>
-    <button class="btn btn-primary" id="btn-create" onclick="startCreation()" style="display:none;background:linear-gradient(135deg,#1DB954,#17a344);color:#000;">
-      📜 Crear las 12 playlists
+    <div id="alert-token-err" class="alert alert-err">✗ No se pudo obtener el token. Verificá que la Redirect URI en Spotify coincida exactamente con tu URL de CodePen.</div>
+    <button class="btn btn-primary" id="btn-auth" onclick="doAuth()">🔮 Abrir Spotify para autorizar</button>
+    <button class="btn btn-primary" id="btn-create" onclick="startCreation()" style="display:none;background:linear-gradient(135deg,#1DB954,#17a344)">
+      📜 Crear las 12 playlists en mi Spotify
     </button>
   </div>
 
+  <!-- ═══ PROGRESS ═══ -->
   <div id="section-progress">
     <div class="divider">invocando el grimorio</div>
     <div class="step active" style="margin-bottom:0">
@@ -339,6 +359,7 @@
     </div>
   </div>
 
+  <!-- ═══ DONE ═══ -->
   <div id="section-done">
     <span class="big">🌙</span>
     <h2>El grimorio está completo</h2>
@@ -348,6 +369,7 @@
 
 </div>
 <script>
+// ── Playlists ──────────────────────────────────────────────────────────────
 const PLAYLISTS = [
   { name:'🗺️ Cenizas del Sur',                     desc:'Rock Argentino · Indie Latino · Folklore — Lo que queda cuando el viento se lleva todo.',         searches:['rock argentino','charly garcia','soda stereo','mon laferte','bizarrap','manu chao'] },
   { name:'🌸 Hechizos del Este',                    desc:'K-Pop · K-Indie · K-R&B — Canciones que llegan desde el otro lado del mundo.',                    searches:['blackpink','bts k-pop','newjeans kpop','le sserafim','aespa kpop','rosé kpop'] },
@@ -363,11 +385,13 @@ const PLAYLISTS = [
   { name:'🕸️ Bruja en la Pista',                   desc:'Dance Pop · Electropop — Bailar también es un acto de poder.',                                    searches:['lady gaga bad romance','dance pop hits','electropop','lady gaga poker face'] },
 ];
 
+// ── State ──────────────────────────────────────────────────────────────────
 let codepenUrl = '', clientId = '', accessToken = '';
 
+// ── Step 1: CodePen URL ────────────────────────────────────────────────────
 function goStep2() {
   const val = document.getElementById('input-codepen-url').value.trim();
-  if (!val.startsWith('http')) { alert('Por favor ingresá una URL válida.'); return; }
+  if (!val.startsWith('http')) { alert('Por favor ingresá una URL válida de CodePen.'); return; }
   codepenUrl = val;
   localStorage.setItem('sp_redirect', codepenUrl);
   document.getElementById('display-redirect').textContent = codepenUrl;
@@ -385,6 +409,7 @@ function copyRedirect() {
   });
 }
 
+// ── Step 2 → Step 3 ────────────────────────────────────────────────────────
 function goStep3() {
   const val = document.getElementById('input-client-id').value.trim();
   if (!val || val.length < 10) { alert('Por favor ingresá un Client ID válido.'); return; }
@@ -396,10 +421,24 @@ function goStep3() {
   s3.scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
+// ── Auth ───────────────────────────────────────────────────────────────────
 function doAuth() {
-  const redirect = codepenUrl || localStorage.getItem('sp_redirect') || '';
-  const cid = clientId || localStorage.getItem('sp_client_id') || '';
-  if (!redirect || !cid) { alert('Completá los pasos anteriores primero.'); return; }
+  const redirect = document.getElementById('input-codepen-url').value.trim()
+    || codepenUrl || localStorage.getItem('sp_redirect') || '';
+  const cid = document.getElementById('input-client-id').value.trim()
+    || clientId || localStorage.getItem('sp_client_id') || '';
+  if (!redirect || !redirect.startsWith('http')) {
+    alert('Falta la URL en el Paso I. Pegá: https://benegeseritx.github.io/playlist/');
+    return;
+  }
+  if (!cid || cid.length < 10) {
+    alert('Falta el Client ID en el Paso II.');
+    return;
+  }
+  codepenUrl = redirect;
+  clientId = cid;
+  localStorage.setItem('sp_redirect', redirect);
+  localStorage.setItem('sp_client_id', cid);
   const params = new URLSearchParams({
     client_id: cid,
     response_type: 'token',
@@ -410,7 +449,9 @@ function doAuth() {
   window.location.href = 'https://accounts.spotify.com/authorize?' + params;
 }
 
+// ── On load: check token in URL hash ──────────────────────────────────────
 window.addEventListener('load', () => {
+  // Restore saved values
   const savedRedirect = localStorage.getItem('sp_redirect');
   const savedCid = localStorage.getItem('sp_client_id');
   if (savedRedirect) {
@@ -423,12 +464,15 @@ window.addEventListener('load', () => {
     clientId = savedCid;
   }
 
+  // Check for token in hash
   const hash = new URLSearchParams(window.location.hash.substring(1));
   const token = hash.get('access_token');
   if (token) {
     accessToken = token;
     localStorage.setItem('sp_token', token);
     window.history.replaceState({}, '', window.location.pathname + window.location.search);
+
+    // Unlock UI
     ['step1','step2'].forEach(id => {
       const el = document.getElementById(id);
       el.classList.remove('active','locked');
@@ -443,6 +487,7 @@ window.addEventListener('load', () => {
   }
 });
 
+// ── Spotify API ────────────────────────────────────────────────────────────
 async function api(url, method='GET', body=null) {
   const token = accessToken || localStorage.getItem('sp_token');
   const res = await fetch(url, {
@@ -466,6 +511,7 @@ async function addTracks(playlistId, uris) {
     await api(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, 'POST', { uris: uris.slice(i, i+100) });
 }
 
+// ── Log & UI ───────────────────────────────────────────────────────────────
 function log(msg, type='info') {
   const el = document.getElementById('log');
   const d = document.createElement('div');
@@ -484,11 +530,13 @@ function setChip(i, status) {
   c.querySelector('.chip-st').textContent = { pending:'○', running:'◌', ok:'✓', fail:'✗' }[status]||'';
 }
 
+// ── Main ───────────────────────────────────────────────────────────────────
 async function startCreation() {
   document.getElementById('btn-create').disabled = true;
   document.getElementById('section-progress').style.display = 'block';
   document.getElementById('section-progress').scrollIntoView({ behavior:'smooth' });
 
+  // Build chips
   const chipsEl = document.getElementById('chips');
   PLAYLISTS.forEach((pl, i) => {
     const c = document.createElement('div');
@@ -497,11 +545,12 @@ async function startCreation() {
     chipsEl.appendChild(c);
   });
 
+  // Get user
   log('Conectando con Spotify...', 'info');
   let me;
   try { me = await api('https://api.spotify.com/v1/me'); }
   catch(e) {
-    log('Error: '+e.message, 'err');
+    log('Error de autenticación: '+e.message, 'err');
     document.getElementById('alert-token-err').style.display = 'block';
     return;
   }
@@ -515,36 +564,42 @@ async function startCreation() {
     setChip(i, 'running');
     setProgress(Math.round(i/total*90), `Creando ${i+1} de ${total}: ${pl.name}`);
     log(`Invocando "${pl.name}"...`, 'info');
+
     try {
       const created = await api(`https://api.spotify.com/v1/users/${me.id}/playlists`, 'POST', {
         name: pl.name, description: pl.desc, public: false
       });
+
       let uris = [];
       for (const q of pl.searches) {
         const found = await searchTracks(q);
         uris = [...new Set([...uris, ...found])];
-        await new Promise(r => setTimeout(r, 150));
+        await sleep(150);
       }
+
       if (uris.length) {
         await addTracks(created.id, uris.slice(0, 50));
         log(`"${pl.name}" — ${Math.min(uris.length,50)} canciones ✓`, 'ok');
       } else {
         log(`"${pl.name}" — creada sin canciones`, 'warn');
       }
+
       setChip(i, 'ok'); done++;
     } catch(e) {
       log(`Error en "${pl.name}": ${e.message}`, 'err');
       setChip(i, 'fail');
     }
-    await new Promise(r => setTimeout(r, 300));
+    await sleep(300);
   }
 
   setProgress(100, `¡Ritual completo! ${done}/${total} playlists creadas.`);
   log(`Grimorio completo: ${done} de ${total} playlists invocadas 🌙`, 'ok');
-  await new Promise(r => setTimeout(r, 600));
+  await sleep(600);
   document.getElementById('section-done').style.display = 'block';
   document.getElementById('section-done').scrollIntoView({ behavior:'smooth' });
 }
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
 </body>
 </html>
